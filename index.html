@@ -214,18 +214,18 @@ figure.fig img { display: block; width: 100%; height: auto; }
     <p class="brand-it">RoboProbe</p>
     <h1>Benchmarking Physical Plausibility of Robot World Models</h1>
     <p class="tagline">Five physical laws. <span>Evidence-grounded metrics.</span> An agent that audits them.</p>
-    <p class="lede">Generated robot videos often look real but break physical laws. RoboProbe tests five such laws with law-specific metrics coordinated by an agent, and RP-Bench labels 761 generated videos and 130 real demonstrations of 239 manipulation tasks from 12 robot datasets.</p>
+    <p class="lede">Generated robot videos often look real but break physical laws. RoboProbe checks five of them with law-specific metrics run by an agent.</p>
     <div class="ctas">
       <a class="primary" href="#examples">Watch the examples</a>
       <a href="#results">Results</a>
       <a href="#overview">Figures</a>
     </div>
     <div class="stats">
-      <div class="stat"><div class="big">0.894</div><div class="lab">average AUROC over the five laws; Gemini 4 Argon 0.828</div></div>
-      <div class="stat"><div class="big">891 <small>videos</small></div><div class="lab">761 human-labelled generated videos from five models and 130 real demonstrations</div></div>
-      <div class="stat"><div class="big">3.9 <small>frames</small></div><div class="lab">median frame error, averaged over the five laws; always guessing the middle frame gives 21.5</div></div>
+      <div class="stat"><div class="big">0.894</div><div class="lab">average AUROC, five laws (Gemini 4 Argon: 0.828)</div></div>
+      <div class="stat"><div class="big">891 <small>videos</small></div><div class="lab">761 labelled generated videos from five models and 130 real ones; 239 tasks, 12 robot datasets</div></div>
+      <div class="stat"><div class="big">3.9 <small>frames</small></div><div class="lab">median frame error (guessing the middle frame: 21.5)</div></div>
     </div>
-    <p class="statnote">From Table 1 of the paper, RoboProbe with the agent in the loop.</p>
+    <p class="statnote">Table 1, RoboProbe with the agent in the loop.</p>
   </div>
 </header>
 
@@ -233,13 +233,12 @@ figure.fig img { display: block; width: 100%; height: auto; }
   <section id="overview">
     <p class="eyebrow">Overview</p>
     <h2>RP-Bench and RoboProbe at a glance</h2>
-    <p class="sub">The benchmark, the agreement with human judgments per generator, and one violation per law.</p>
     <figure class="fig">
       <a href="assets/fig/fig1_teaser.webp" target="_blank" rel="noopener"><img src="assets/fig/fig1_teaser.webp" width="2400" height="1237" alt="Figure 1. Left: the RP-Bench tasks with serial manipulators and humanoids. Middle: per generator, the share of videos RoboProbe finds plausible against the human share, Kendall tau 1.00. Right: one generated video per violation type with its score."></a>
     </figure>
-    <p class="figcap"><span class="figlabel">Figure 1.</span> <b>Generated robot videos look real but break physical laws.</b> Left, the benchmark covers serial manipulators and humanoids in first- and third-person views. Middle, for each generator, the share of videos that RoboProbe finds plausible against the share the annotators do on the 130 shared tasks; the rankings agree (Kendall &tau; = 1.00). Right, one generated video per violation type, with the violation circled in red and the metric's score, a higher score meaning a likelier violation.</p>
+    <p class="figcap"><span class="figlabel">Figure 1.</span> <b>Generated robot videos look real but break physical laws.</b> Left: serial manipulators and humanoids, first- and third-person views. Middle: share of videos judged plausible per generator, RoboProbe vs. annotators on the 130 shared tasks (Kendall &tau; = 1.00). Right: one violation per law, circled, with its score (higher means a likelier violation).</p>
     <h3 class="fvtitle">Videos behind Figure 1</h3>
-    <p class="cap">The five generated videos of the figure's right panel, with the description and score printed there.</p>
+    <p class="cap">The five clips in the figure's right panel.</p>
     <div class="figvids" id="fv1"></div>
   </section>
 
@@ -252,26 +251,24 @@ figure.fig img { display: block; width: 100%; height: auto; }
   <section id="method">
     <p class="eyebrow">Method</p>
     <h2>Five metrics, run as tools of agents</h2>
-    <p class="sub">The five metrics run as tools of a measurement agent; an audit agent checks the evidence behind each score.</p>
     <figure class="fig">
       <a href="assets/fig/fig2_method.webp" target="_blank" rel="noopener"><img src="assets/fig/fig2_method.webp" width="2400" height="1700" loading="lazy" alt="Figure 2. The measurement agent calls five metric tools: Contact fidelity, Object persistence, Solidity, Robot deformation and Object deformation. The audit agent accepts the result, abstains, or starts evidence repair, edge-case inspection or audit refinement, after which the metric reruns."></a>
     </figure>
-    <p class="figcap"><span class="figlabel">Figure 2.</span> <b>RoboProbe runs its metrics as tools of agents.</b> A measurement agent calls five metric tools, one per law. An audit agent then checks the evidence behind each score, without seeing scores or labels, and either accepts the result, abstains, or starts evidence repair, edge-case inspection or audit refinement, after which the metric reruns.</p>
+    <p class="figcap"><span class="figlabel">Figure 2.</span> <b>RoboProbe runs its metrics as tools of agents.</b> A measurement agent calls one metric per law. An audit agent checks the evidence without seeing scores or labels, and accepts, abstains, or starts evidence repair, edge-case inspection or audit refinement before the metric reruns.</p>
     <h3 class="fvtitle">The five laws</h3>
-    <p class="cap" style="margin-bottom:12px">A higher score means a more likely violation. Details are in Sec. 3 of the paper and in the supplement.</p>
+    <p class="cap" style="margin-bottom:12px">Higher score means a likelier violation. Details: Sec. 3 and the supplement.</p>
     <div class="laws">
-      <div class="law"><h3>Contact fidelity</h3><p class="rule">An object should start to move only after the robot touches it.</p><p>Point tracks find when the object moves; a VLM judges contact on close crops of the frames where gripper and object come closest. Motion with no plausible contact before it is a violation. A Gemini audit of 16 frames is fused in by percentile rank.</p><a href="#contact">Examples &rarr;</a></div>
-      <div class="law"><h3>Object persistence</h3><p class="rule">An object should never duplicate, appear from nowhere or vanish.</p><p>Tracks of the manipulated object score duplication, pop-in and vanishing; a Gemini audit of 16 frames covers every other object. The two are averaged by percentile rank.</p><a href="#persistence">Examples &rarr;</a></div>
-      <div class="law"><h3>Solidity</h3><p class="rule">An object should not pass through a solid surface or become embedded in it.</p><p>Masks and 3D point clouds of the moving and the static object find the frames at risk of pass-through or insertion; Gemini then judges those frames with the safe frames before them.</p><a href="#solidity">Examples &rarr;</a></div>
-      <div class="law"><h3>Robot deformation</h3><p class="rule">Joints articulate, but each robot link must stay rigid.</p><p>Each link's tracked 3D points are aligned to a reference frame by one rigid transform. The residual it cannot explain, divided by the link length, is the score, taken at the worst frame.</p><a href="#robot">Examples &rarr;</a></div>
-      <div class="law"><h3>Object deformation</h3><p class="rule">A rigid object should keep its shape and appearance while the robot handles it.</p><p>With the robot's pixels removed, the object in each frame is compared patch by patch with a clean reference view. The score averages this with Gemini's rating of the whole video.</p><a href="#object">Examples &rarr;</a></div>
+      <div class="law"><h3>Contact fidelity</h3><p class="rule">An object should start to move only after the robot touches it.</p><p>Point tracks find when the object moves; a VLM checks close crops for contact before it. Fused with a 16-frame Gemini audit.</p><a href="#contact">Examples &rarr;</a></div>
+      <div class="law"><h3>Object persistence</h3><p class="rule">An object should never duplicate, appear from nowhere or vanish.</p><p>Object tracks score duplication, pop-in and vanishing; a 16-frame Gemini audit covers the other objects.</p><a href="#persistence">Examples &rarr;</a></div>
+      <div class="law"><h3>Solidity</h3><p class="rule">An object should not pass through a solid surface or become embedded in it.</p><p>3D point clouds of the two objects find risky frames; Gemini judges them against the safe frames before.</p><a href="#solidity">Examples &rarr;</a></div>
+      <div class="law"><h3>Robot deformation</h3><p class="rule">Joints articulate, but each robot link must stay rigid.</p><p>One rigid transform is fit to each link's 3D points; the leftover error over link length, at the worst frame, is the score.</p><a href="#robot">Examples &rarr;</a></div>
+      <div class="law"><h3>Object deformation</h3><p class="rule">A rigid object should keep its shape and appearance while the robot handles it.</p><p>With robot pixels removed, the object is compared patch by patch with a clean view, then averaged with Gemini's rating.</p><a href="#object">Examples &rarr;</a></div>
     </div>
   </section>
 
   <section id="results">
     <p class="eyebrow">Results</p>
     <h2>Results on RP-Bench</h2>
-    <p class="sub">Per-video AUROC against the human labels, and how far the reported frame lies from the annotated one.</p>
     <div class="tablewrap">
       <table class="res">
         <thead>
@@ -287,14 +284,14 @@ figure.fig img { display: block; width: 100%; height: auto; }
         </tbody>
       </table>
     </div>
-    <p class="cap">From Table 1 of the paper. RoboProbe with the agent in the loop; Gemini 4 Argon sees 16 uniformly sampled frames and a violation-specific question. Frame error is the median |reported &minus; annotated frame| over the annotated positives with a reported frame, against always guessing the middle frame.</p>
+    <p class="cap">Table 1. Gemini 4 Argon sees 16 sampled frames and a law-specific question. Frame error: median |reported &minus; annotated frame| over annotated positives, vs. always guessing the middle frame.</p>
     <div style="margin-top:28px">
       <figure class="fig">
         <a href="assets/fig/fig3_cases.webp" target="_blank" rel="noopener"><img src="assets/fig/fig3_cases.webp" width="2400" height="1304" loading="lazy" alt="Figure 3. (a) Contact, HunyuanVideo 1.5: human mark at frame 20, RoboProbe frame 22, Gemini frame 40. (b) Solidity, ABot: human span 6 to 16, RoboProbe frame 10, Gemini frame 21. (c) Object deformation: the audit gives the apple its pixels back and the metric flags it with 0.59 at frame 70."></a>
       </figure>
-      <p class="figcap"><span class="figlabel">Figure 3.</span> <b>RoboProbe localizes contact and solidity violations, and its audit rescues a missed case.</b> (a, b) Lanes show the human mark, the frame our metric reports and the frame Gemini 4 Argon names. Our frame comes from the geometry: in (b), robot points found inside the cup. The red box marks that frame. (c) The robot mask covers the apple, so no frame can be compared until the audit agent's edge-case inspection gives the apple its pixels back.</p>
+      <p class="figcap"><span class="figlabel">Figure 3.</span> <b>RoboProbe localizes contact and solidity violations, and its audit rescues a missed case.</b> (a, b) Lanes show the human mark, our frame (red box) and Gemini's frame; ours comes from geometry, in (b) robot points inside the cup. (c) The robot mask hides the apple until the audit's edge-case inspection gives its pixels back.</p>
       <h3 class="fvtitle">Videos behind Figure 3</h3>
-      <p class="cap">The three videos of the figure. The buttons jump to the frames the figure shows.</p>
+      <p class="cap">Buttons jump to the frames shown in the figure.</p>
       <div class="figvids three" id="fv3"></div>
     </div>
   </section>
@@ -302,11 +299,10 @@ figure.fig img { display: block; width: 100%; height: auto; }
   <section id="detections">
     <p class="eyebrow">Supplement</p>
     <h2>Detections across the five laws</h2>
-    <p class="sub">From the supplementary material. The videos below show more examples per law.</p>
     <figure class="fig">
       <a href="assets/fig/supp_detections.webp" target="_blank" rel="noopener"><img src="assets/fig/supp_detections.webp" width="2400" height="681" loading="lazy" alt="Supplementary figure. Eight labelled violations grouped by law, each with an earlier frame above the violation frame, a red circle on the violation and the metric's score."></a>
     </figure>
-    <p class="figcap"><b>The metrics detect violations of all five laws.</b> Eight labelled violations in the evaluation set, grouped by law. Each column shows an earlier frame above the violation frame, a red circle marks the violation and the pill gives the metric's score.</p>
+    <p class="figcap"><b>The metrics detect violations of all five laws.</b> Eight labelled violations: an earlier frame above the violation frame, the violation circled, the score in the pill.</p>
   </section>
 
 
@@ -314,15 +310,15 @@ figure.fig img { display: block; width: 100%; height: auto; }
   <section id="examples">
     <p class="eyebrow">Example videos</p>
     <h2>Labelled violations, law by law</h2>
-    <p class="sub">Each clip is a generated video labelled a violation of the law shown. Under each clip, a timeline marks when the annotator saw the violation start, the frame RoboProbe reports and the frame the frames-only Gemini baseline names.</p>
+    <p class="sub">Generated clips labelled as violations. The timeline marks the annotated violation, RoboProbe's frame and Gemini's frame.</p>
     <details class="howto">
       <summary>How to read an example</summary>
       <div class="legend">
-        <div><span class="sw band"></span><span><b>Annotated violation.</b> A dot is the onset an annotator marked; a band is an annotated interval.</span></div>
-        <div><span class="sw ours"></span><span><b>RoboProbe frame.</b> The frame the metric reports as the violation.</span></div>
-        <div><span class="sw gem"></span><span><b>Gemini frame.</b> The frame the frames-only baseline names, one of its 16 sampled frames.</span></div>
-        <div><span class="sw dot" style="background:var(--fg);width:3px;height:16px;border-radius:0;margin-left:5px;margin-right:4px"></span><span>Click the timeline or a marker to jump to that frame. The poster shows the violation.</span></div>
-        <div style="grid-column:1/-1"><span><b>Scores.</b> <b class="o">Flags</b> means the score is at or above the threshold that maximizes Youden's index on all labelled RP-Bench videos, set separately for RoboProbe and for Gemini, as in the paper's generator table. Scales: Contact fidelity and Object persistence give a 0&ndash;1 rank-fused score (Gemini: probability, 0&ndash;100 for Contact, 0&ndash;1 for Persistence); Solidity gives a 0&ndash;100 judge probability for both; Robot deformation gives the rigid-fit residual as a fraction of link length (Gemini: 0&ndash;100 rating); Object deformation gives 0&ndash;1 (Gemini: 0&ndash;100). For Contact fidelity and Object persistence the Gemini answer is also the audit that RoboProbe fuses with its own evidence.</span></div>
+        <div><span class="sw band"></span><span><b>Annotated.</b> A dot is a marked onset; a band is a marked interval.</span></div>
+        <div><span class="sw ours"></span><span><b>RoboProbe.</b> The frame the metric reports.</span></div>
+        <div><span class="sw gem"></span><span><b>Gemini.</b> The frame the baseline names, one of its 16 sampled frames.</span></div>
+        <div><span class="sw dot" style="background:var(--fg);width:3px;height:16px;border-radius:0;margin-left:5px;margin-right:4px"></span><span>Click the timeline or a marker to jump there.</span></div>
+        <div style="grid-column:1/-1"><span><b class="o">Flags</b>: at or above the Youden-optimal threshold on all labelled RP-Bench videos, set separately for RoboProbe and Gemini. Scales: Contact and Persistence 0&ndash;1, rank-fused (Gemini 0&ndash;100 and 0&ndash;1); Solidity 0&ndash;100 for both; Robot deformation, residual over link length (Gemini 0&ndash;100); Object deformation 0&ndash;1 (Gemini 0&ndash;100). For Contact and Persistence, the Gemini answer is also the audit RoboProbe fuses in.</span></div>
       </div>
     </details>
     <div class="toolbar">
@@ -336,9 +332,9 @@ figure.fig img { display: block; width: 100%; height: auto; }
 
 <footer>
   <div class="wrap">
-    <p><b>About the videos.</b> Every clip except the real recording is generated by a video model; the real recording comes from one of the robot datasets of RP-Bench. Clips play muted on a loop while on screen; pausing a clip or jumping to a frame keeps it still.</p>
-    <p>How the examples were chosen: each clip is labelled a violation of the law shown (labels the annotators marked as unsure are left out), RoboProbe flags it well above its threshold, the reported frame lies close to the annotated violation where an annotation of the timing exists (in one Robot deformation clip the changed hand stays until the end, and the reported frame comes later), and the violation is visible to the eye. Two examples are ones the frames-only Gemini baseline misses. The scores are the ones behind Table 1. Clips are re-encoded at 480p or lower, without sound; six clips are cropped to leave out people in the background.</p>
-    <p>All content is self-contained; this page makes no network requests.</p>
+    <p>All clips except the real recording are generated. They play muted on a loop while visible; pausing or jumping to a frame keeps a clip still.</p>
+    <p>Clips are labelled violations (unsure labels left out) that RoboProbe flags, with the reported frame near the annotation (one Robot deformation clip excepted) and the violation visible. Scores as in Table 1. Re-encoded at 480p or lower, no sound; six clips are cropped to leave out people.</p>
+    <p>Self-contained; no network requests.</p>
   </div>
 </footer>
 
@@ -383,7 +379,7 @@ const EX = [
    desc: "As the black arm swings up, its gripper and forearm warp into a large, shapeless mass.",
    ours: "1.857", gem: "75", oflag: true, gflag: true, human: [[93, 101]], of: 102, gf: 96},
   {key: "robot_claw", law: "robot", gen: "Cosmos 2.5", scene: "Humanoid hand, tennis ball into a bin", n: 93, fps: 16, link: "left palm",
-   desc: "The five-finger hand turns into a black two-jaw gripper on a thick white arm while it carries the ball. RoboProbe reports a later frame, while the gripper is still there.",
+   desc: "The five-finger hand turns into a black two-jaw gripper. RoboProbe's frame comes later, while the gripper is still there.",
    ours: "0.310", gem: "65", oflag: true, gflag: true, human: [[56, 64]], of: 88, gf: 92},
   {key: "robot_fingers", law: "robot", gen: "ABot-PhysWorld", scene: "Humanoid, Rubik's cube into a box", n: 81, fps: 15, link: "right index finger",
    desc: "After the right hand lets go of the cube, its fingers stretch into long, thin blades.",
@@ -516,7 +512,7 @@ function card(x, lawName) {
   const sc = el("div", {class: "scores"});
   sc.appendChild(el("div", {class: "sc ours"}, '<div class="who">RoboProbe</div><div class="val">' + x.ours +
     (x.oflag ? ' <span class="flag y ours">flags</span>' : ' <span class="flag n">misses</span>') + '</div>'));
-  sc.appendChild(el("div", {class: "sc gem"}, '<div class="who">Gemini, 16 frames</div><div class="val">' + x.gem +
+  sc.appendChild(el("div", {class: "sc gem"}, '<div class="who">Gemini</div><div class="val">' + x.gem +
     (x.gflag ? ' <span class="flag y gem">flags</span>' : ' <span class="flag n">misses</span>') + '</div>'));
   body.appendChild(sc);
   c.appendChild(body);
@@ -557,7 +553,7 @@ for (const L of LAWS) {
   const g = addPanel(L.id, L.name, xs.length, L.rule, "AUROC " + L.auroc + " vs. Gemini " + L.gem);
   for (const x of xs) g.appendChild(card(x, L.name));
 }
-const realGrid = addPanel("real", "Real video", 1, "The real recording of the task in the first Contact fidelity example. Neither RoboProbe nor Gemini flags it for Contact fidelity, Object persistence or Solidity.");
+const realGrid = addPanel("real", "Real video", 1, "The real recording of the tennis-ball task. Neither RoboProbe nor Gemini flags it.");
 activate(LAWS[0].id);
 function fromHash() {
   const id = location.hash.slice(1);
@@ -600,8 +596,8 @@ const FIG1 = [
 ];
 const FIG3 = [
   {key: "fig3a", law: "(a) Contact", gen: "HunyuanVideo 1.5", desc: "The banana lifts before the grip.", frames: [6, 15, 22, 30, 40], n: 121, fps: 24},
-  {key: "fig3b", law: "(b) Solidity", gen: "ABot-PhysWorld", desc: "The hand passes into the cup; RoboProbe finds 52 robot points inside the cup at frame 10.", frames: [2, 10, 16, 21, 32], n: 81, fps: 15},
-  {key: "fig3c", law: "(c) Object deformation", gen: "HunyuanVideo 1.5", desc: "The robot mask covers the apple until the audit gives the apple its pixels back; the metric then flags it with 0.59 at frame 70.", frames: [16, 24, 70], n: 121, fps: 24}
+  {key: "fig3b", law: "(b) Solidity", gen: "ABot-PhysWorld", desc: "The hand passes into the cup; 52 robot points are inside it at frame 10.", frames: [2, 10, 16, 21, 32], n: 81, fps: 15},
+  {key: "fig3c", law: "(c) Object deformation", gen: "HunyuanVideo 1.5", desc: "The audit frees the apple from the robot mask; the metric then gives 0.59 at frame 70.", frames: [16, 24, 70], n: 121, fps: 24}
 ];
 function figTile(x) {
   const c = el("article", {class: "fv", id: "ex-" + x.key});
