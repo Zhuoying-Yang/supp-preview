@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>RoboProbe</title>
+<meta name="description" content="Figures and example videos for RoboProbe: Benchmarking Physical Plausibility of Robot World Models (anonymous submission).">
+<style>
+:root {
+  --bg: #f7f6f2; --surface: #ffffff; --fg: #1c1c1e; --muted: #5d6066; --line: #e2e0d8; --soft: #efede6;
+  --ours: #1f5fbf; --ours-soft: #e3ecfa; --gem: #b9550f; --gem-soft: #f8e9dd;
+  --human: #3f4651; --human-band: rgba(63,70,81,.22); --miss: #8a8f98; --track: #e9e7e0;
+  --serif: "Iowan Old Style", "Charter", "Palatino Linotype", Georgia, serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141517; --surface: #1d1f22; --fg: #ececec; --muted: #a2a6ad; --line: #2e3136; --soft: #24272b;
+    --ours: #7fb0ff; --ours-soft: #1d2d47; --gem: #f2a25e; --gem-soft: #3a2817;
+    --human: #d6d9de; --human-band: rgba(214,217,222,.22); --miss: #80858d; --track: #2b2e33;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141517; --surface: #1d1f22; --fg: #ececec; --muted: #a2a6ad; --line: #2e3136; --soft: #24272b;
+  --ours: #7fb0ff; --ours-soft: #1d2d47; --gem: #f2a25e; --gem-soft: #3a2817;
+  --human: #d6d9de; --human-band: rgba(214,217,222,.22); --miss: #80858d; --track: #2b2e33;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 var(--sans); }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+html { scroll-padding-top: 64px; }
+/* top bar */
+.topbar { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 88%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.topbar .wrap { display: flex; align-items: center; gap: 16px; height: 52px; }
+.brand { font-weight: 700; letter-spacing: -.01em; color: var(--fg); text-decoration: none; flex: none; }
+.toplinks { display: flex; gap: 2px; margin-left: auto; overflow-x: auto; scrollbar-width: none; }
+.toplinks::-webkit-scrollbar { display: none; }
+.toplinks a { color: var(--muted); text-decoration: none; font-size: 14px; padding: 6px 10px; border-radius: 8px; white-space: nowrap; }
+.toplinks a:hover { color: var(--fg); background: var(--soft); }
+/* hero */
+header.hero { text-align: center; padding: 64px 0 40px; border-bottom: 1px solid var(--line); }
+.pill { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--ours); background: var(--ours-soft); padding: 6px 14px; border-radius: 999px; margin: 0 0 22px; }
+.brand-it { font-family: var(--serif); font-style: italic; font-weight: 600; font-size: clamp(26px, 3.4vw, 36px); color: var(--ours); margin: 0 0 6px; }
+h1 { font-family: var(--serif); font-weight: 600; font-size: clamp(30px, 5vw, 54px); line-height: 1.1; letter-spacing: -.02em; margin: 0 auto 18px; max-width: 900px; }
+.tagline { font-size: 18px; font-weight: 600; margin: 0 0 12px; }
+.tagline span { color: var(--ours); }
+.lede { font-size: 17px; max-width: 720px; margin: 0 auto 12px; color: var(--muted); }
+.ctas { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 26px 0 0; }
+.ctas a { text-decoration: none; font-size: 14px; font-weight: 600; padding: 9px 18px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); }
+.ctas a:hover { border-color: var(--fg); }
+.ctas a.primary { background: var(--ours); border-color: var(--ours); color: var(--surface); }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 880px; margin: 40px auto 0; }
+.stat { padding: 4px 18px; }
+.stat + .stat { border-left: 1px solid var(--line); }
+.stat .big { font-size: 40px; font-weight: 650; letter-spacing: -.02em; color: var(--ours); font-variant-numeric: tabular-nums; line-height: 1.1; }
+.stat .big small { font-size: 17px; font-weight: 500; color: var(--muted); letter-spacing: 0; }
+.stat .lab { font-size: 13px; color: var(--muted); margin-top: 6px; }
+.statnote { font-size: 12px; color: var(--muted); margin: 18px 0 0; }
+section { padding: 64px 0 8px; }
+.eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--ours); margin: 0 0 8px; }
+h2 { font-weight: 650; font-size: clamp(26px, 3.2vw, 36px); letter-spacing: -.025em; line-height: 1.15; margin: 0 0 10px; }
+.sub { color: var(--muted); margin: 0 0 22px; max-width: 820px; font-size: 17px; }
+/* example browser */
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 22px 0 18px; }
+.tabs { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; max-width: 100%; padding: 2px; }
+.tabs::-webkit-scrollbar { display: none; }
+.tabs button { flex: none; font: 600 14px/1 var(--sans); border: 1px solid var(--line); background: var(--surface); color: var(--fg); padding: 9px 14px; border-radius: 999px; cursor: pointer; }
+.tabs button .n { font-weight: 500; color: var(--muted); margin-left: 4px; font-variant-numeric: tabular-nums; }
+.tabs button[aria-selected="true"] { background: var(--fg); border-color: var(--fg); color: var(--bg); }
+.tabs button[aria-selected="true"] .n { color: inherit; opacity: .7; }
+.speed { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; color: var(--muted); }
+.speed button { font: 600 12px/1 var(--sans); border: 1px solid var(--line); background: var(--surface); color: var(--fg); padding: 7px 9px; border-radius: 8px; cursor: pointer; font-variant-numeric: tabular-nums; }
+.speed button[aria-pressed="true"] { border-color: var(--ours); color: var(--ours); background: var(--ours-soft); }
+.panelhead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 0 0 14px; }
+.panelhead .rule { font-family: var(--serif); font-size: 19px; margin: 0; }
+.panelhead .num { color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+details.howto { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+details.howto summary { cursor: pointer; padding: 12px 16px; font-weight: 600; font-size: 15px; }
+details.howto .legend { border: 0; border-top: 1px solid var(--line); border-radius: 0 0 10px 10px; }
+/* results table */
+.tablewrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+table.res { border-collapse: collapse; width: 100%; min-width: 560px; font-variant-numeric: tabular-nums; }
+table.res th, table.res td { padding: 10px 14px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+table.res th:first-child, table.res td:first-child { text-align: left; }
+table.res thead th { font-size: 13px; color: var(--muted); font-weight: 600; }
+table.res tbody tr:last-child td { border-bottom: 0; font-weight: 600; }
+table.res td.o { color: var(--ours); font-weight: 600; }
+table.res td.g { color: var(--gem); }
+.cap { font-size: 13px; color: var(--muted); margin: 10px 2px 0; max-width: 900px; }
+/* laws */
+.laws { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; }
+.law { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+.law h3 { margin: 0 0 6px; font-size: 16px; }
+.law .rule { font-family: var(--serif); font-size: 16px; margin: 0 0 8px; }
+.law p { margin: 0; font-size: 14px; color: var(--muted); }
+.law a { font-size: 13px; color: var(--ours); text-decoration: none; display: inline-block; margin-top: 10px; }
+/* legend */
+.legend { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); font-size: 14px; }
+.legend div { display: flex; gap: 10px; align-items: flex-start; }
+.sw { flex: none; margin-top: 4px; }
+.sw.band { width: 22px; height: 12px; background: var(--human-band); border-left: 2px solid var(--human); border-right: 2px solid var(--human); }
+.sw.ours { width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 11px solid var(--ours); }
+.sw.gem { width: 11px; height: 11px; border: 2px solid var(--gem); transform: rotate(45deg); margin: 6px 3px 0; }
+.sw.dot { width: 12px; height: 12px; border-radius: 50%; background: var(--human); }
+/* examples */
+.metric-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.metric-head .num { color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+.vbox { position: relative; background: #000; aspect-ratio: 16 / 9; }
+.vbox video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #000; }
+.ribbon { position: absolute; top: 10px; left: 10px; z-index: 2; background: var(--ours); color: #fff; font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 999px; pointer-events: none; }
+.frameno { position: absolute; top: 10px; right: 10px; z-index: 2; background: rgba(0,0,0,.6); color: #fff; font: 12px/1 var(--mono); padding: 4px 7px; border-radius: 6px; pointer-events: none; }
+.tl { position: relative; height: 30px; margin: 12px 14px 0; cursor: pointer; touch-action: manipulation; }
+.tl .track { position: absolute; left: 0; right: 0; top: 13px; height: 6px; background: var(--track); border-radius: 3px; }
+.tl .band { position: absolute; top: 9px; height: 14px; background: var(--human-band); border-left: 2px solid var(--human); border-right: 2px solid var(--human); }
+.tl .onset { position: absolute; top: 10px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: var(--human); }
+.tl .m-ours { position: absolute; top: 0; margin-left: -7px; width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-top: 11px solid var(--ours); }
+.tl .m-gem { position: absolute; top: 20px; margin-left: -6px; width: 10px; height: 10px; border: 2px solid var(--gem); background: var(--surface); transform: rotate(45deg); }
+.tl .head { position: absolute; top: 5px; width: 2px; height: 22px; margin-left: -1px; background: var(--fg); opacity: .75; }
+.marks { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 14px 0; }
+.marks button { font: 12px/1.2 var(--sans); border: 1px solid var(--line); background: var(--surface); color: var(--fg); padding: 4px 8px; border-radius: 6px; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
+.marks button:hover { border-color: var(--fg); }
+.marks button .sw { margin-top: 0; }
+.marks button .sw.gem { margin: 2px 2px 0; width: 9px; height: 9px; }
+.marks button .sw.ours { border-left-width: 6px; border-right-width: 6px; border-top-width: 9px; }
+.marks .na { font-size: 12px; color: var(--muted); padding: 4px 2px; }
+.body { padding: 12px 14px 16px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.meta { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 10px; }
+.meta b { color: var(--fg); font-weight: 600; }
+.desc { margin: 0; font-size: 15px; }
+.scores { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: auto; }
+.sc { border-radius: 8px; padding: 8px 10px; }
+.sc.ours { background: var(--ours-soft); }
+.sc.gem { background: var(--gem-soft); }
+.sc .who { font-size: 12px; color: var(--muted); }
+.sc .val { font: 600 20px/1.2 var(--sans); font-variant-numeric: tabular-nums; }
+.sc.ours .val { color: var(--ours); }
+.sc.gem .val { color: var(--gem); }
+.sc .val small { font-size: 12px; font-weight: 400; color: var(--muted); }
+.flag { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; margin-left: 4px; vertical-align: 3px; }
+.flag.y.ours { background: var(--ours); color: var(--surface); }
+.flag.y.gem { background: var(--gem); color: var(--surface); }
+.flag.n { border: 1px solid var(--miss); color: var(--miss); }
+.realscores { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+.realscores th, .realscores td { padding: 5px 6px; border-bottom: 1px solid var(--line); text-align: right; }
+.realscores th:first-child, .realscores td:first-child { text-align: left; }
+.realscores td.o { color: var(--ours); font-weight: 600; }
+.realscores td.g { color: var(--gem); }
+footer { margin-top: 48px; padding: 28px 0 56px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+footer p { max-width: 900px; margin: 0 0 10px; }
+.kickrow { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
+.kickrow .kicker { margin: 0; }
+.themebtn { flex: none; border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 999px; padding: 5px 12px; font: 13px var(--sans); cursor: pointer; }
+/* paper figures: the images have a white background, so the frame stays white in both themes */
+figure.fig { margin: 0; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+figure.fig a { display: block; }
+figure.fig img { display: block; width: 100%; height: auto; }
+.figcap { font-size: 14px; color: var(--muted); margin: 10px 2px 0; max-width: 980px; }
+.figcap b { color: var(--fg); }
+.figlabel { font-weight: 600; color: var(--fg); }
+.abstract { font-family: var(--serif); font-size: 18px; line-height: 1.6; max-width: 860px; margin: 0; }
+/* videos behind the paper figures */
+.fvtitle { font-size: 17px; margin: 26px 0 4px; }
+.figvids { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-top: 12px; }
+.figvids.three { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.fv { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+.fv .vbox { aspect-ratio: 4 / 3; }
+.fv .body { padding: 10px 12px 12px; gap: 6px; }
+.fv h3 { margin: 0; font-size: 15px; }
+.fv .desc { font-size: 14px; }
+.fvscore { align-self: flex-start; margin-top: auto; background: var(--ours-soft); color: var(--ours); font-weight: 600; font-size: 13px; font-variant-numeric: tabular-nums; padding: 3px 9px; border-radius: 999px; }
+.fv .marks { padding: 0; }
+@media (max-width: 640px) {
+  figure.fig { padding: 6px; border-radius: 8px; }
+  .abstract { font-size: 17px; }
+  .wrap { padding: 0 16px; }
+  header.hero { padding: 40px 0 32px; }
+  .stats { grid-template-columns: 1fr; margin-top: 28px; }
+  .stat { padding: 14px 0; }
+  .stat + .stat { border-left: 0; border-top: 1px solid var(--line); }
+  .topbar .wrap { gap: 8px; }
+  .toplinks a { padding: 6px 7px; font-size: 13px; }
+  .themebtn { padding: 5px 9px; font-size: 12px; }
+  .toolbar { margin-top: 18px; }
+  .grid { grid-template-columns: 1fr; }
+  section { padding-top: 32px; }
+  h2 { font-size: 24px; }
+}
+</style>
+</head>
+<body>
+<nav class="topbar" aria-label="Sections">
+  <div class="wrap">
+    <a class="brand" href="#top">RoboProbe</a>
+    <div class="toplinks">
+      <a href="#overview">Overview</a>
+      <a href="#abstract">Abstract</a>
+      <a href="#method">Method</a>
+      <a href="#results">Results</a>
+      <a href="#detections">Detections</a>
+      <a href="#examples">Examples</a>
+    </div>
+    <button class="themebtn" id="themebtn" type="button" aria-label="Switch between light and dark">Light / dark</button>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <p class="pill">Supplementary material &middot; anonymous CVPR 2027 submission</p>
+    <p class="brand-it">RoboProbe</p>
+    <h1>Benchmarking Physical Plausibility of Robot World Models</h1>
+    <p class="tagline">Five physical laws. <span>Evidence-grounded metrics.</span> An agent that audits them.</p>
+    <p class="lede">Generated robot videos often look real but break physical laws. RoboProbe tests five such laws with law-specific metrics coordinated by an agent, and RP-Bench labels 761 generated videos and 130 real demonstrations of 239 manipulation tasks from 12 robot datasets.</p>
+    <div class="ctas">
+      <a class="primary" href="#examples">Watch the examples</a>
+      <a href="#results">Results</a>
+      <a href="#overview">Figures</a>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="big">0.894</div><div class="lab">average AUROC over the five laws; Gemini 4 Argon 0.828</div></div>
+      <div class="stat"><div class="big">891 <small>videos</small></div><div class="lab">761 human-labelled generated videos from five models and 130 real demonstrations</div></div>
+      <div class="stat"><div class="big">3.9 <small>frames</small></div><div class="lab">median frame error, averaged over the five laws; always guessing the middle frame gives 21.5</div></div>
+    </div>
+    <p class="statnote">From Table 1 of the paper, RoboProbe with the agent in the loop.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="overview">
+    <p class="eyebrow">Overview</p>
+    <h2>RP-Bench and RoboProbe at a glance</h2>
+    <p class="sub">The benchmark, the agreement with human judgments per generator, and one violation per law.</p>
+    <figure class="fig">
+      <a href="assets/fig/fig1_teaser.webp" target="_blank" rel="noopener"><img src="assets/fig/fig1_teaser.webp" width="2400" height="1237" alt="Figure 1. Left: the RP-Bench tasks with serial manipulators and humanoids. Middle: per generator, the share of videos RoboProbe finds plausible against the human share, Kendall tau 1.00. Right: one generated video per violation type with its score."></a>
+    </figure>
+    <p class="figcap"><span class="figlabel">Figure 1.</span> <b>Generated robot videos look real but break physical laws.</b> Left, the benchmark covers serial manipulators and humanoids in first- and third-person views. Middle, for each generator, the share of videos that RoboProbe finds plausible against the share the annotators do on the 130 shared tasks; the rankings agree (Kendall &tau; = 1.00). Right, one generated video per violation type, with the violation circled in red and the metric's score, a higher score meaning a likelier violation.</p>
+    <h3 class="fvtitle">Videos behind Figure 1</h3>
+    <p class="cap">The five generated videos of the figure's right panel, with the description and score printed there.</p>
+    <div class="figvids" id="fv1"></div>
+  </section>
+
+  <section id="abstract">
+    <p class="eyebrow">Paper</p>
+    <h2>Abstract</h2>
+    <p class="abstract">Evaluating the physical plausibility of generated videos is critical for reliable robotic planning with world models. These videos inform action proposal and assessment before real-world execution, so undetected physical violations can lead to erroneous assessments of action feasibility and safety. Yet current video generators often produce physically implausible interactions. Detecting such violations directly with vision-language models (VLMs) remains challenging as physical verification requires evidence-grounded spatiotemporal reasoning beyond high-level semantic understanding. We develop five law-specific metrics for evaluating physical plausibility by combining spatiotemporal evidence from segmentation, tracking, 3D geometry, or appearance comparisons with targeted VLM reasoning: Contact fidelity, Object persistence, Solidity, Robot deformation, and Object deformation. Building on this metric suite, we introduce <b>RoboProbe</b>, an agentic evaluation framework that coordinates metric execution and selectively refines evaluations through constrained actions. To evaluate the physical plausibility of robot world models, we further introduce <b>RP-Bench</b>, with 761 human-labeled generated videos and 130 real demonstrations of 239 manipulation tasks from 12 robot datasets. On RP-Bench, all five metrics achieve AUROCs above 0.85 and outperform the evaluated learned judges, prior evaluators, and a frames-only Gemini baseline. Applying these metrics to five video generators reveals distinct patterns of physical violations across models, in both violation types and frequencies.</p>
+  </section>
+
+  <section id="method">
+    <p class="eyebrow">Method</p>
+    <h2>Five metrics, run as tools of agents</h2>
+    <p class="sub">The five metrics run as tools of a measurement agent; an audit agent checks the evidence behind each score.</p>
+    <figure class="fig">
+      <a href="assets/fig/fig2_method.webp" target="_blank" rel="noopener"><img src="assets/fig/fig2_method.webp" width="2400" height="1700" loading="lazy" alt="Figure 2. The measurement agent calls five metric tools: Contact fidelity, Object persistence, Solidity, Robot deformation and Object deformation. The audit agent accepts the result, abstains, or starts evidence repair, edge-case inspection or audit refinement, after which the metric reruns."></a>
+    </figure>
+    <p class="figcap"><span class="figlabel">Figure 2.</span> <b>RoboProbe runs its metrics as tools of agents.</b> A measurement agent calls five metric tools, one per law. An audit agent then checks the evidence behind each score, without seeing scores or labels, and either accepts the result, abstains, or starts evidence repair, edge-case inspection or audit refinement, after which the metric reruns.</p>
+    <h3 class="fvtitle">The five laws</h3>
+    <p class="cap" style="margin-bottom:12px">A higher score means a more likely violation. Details are in Sec. 3 of the paper and in the supplement.</p>
+    <div class="laws">
+      <div class="law"><h3>Contact fidelity</h3><p class="rule">An object should start to move only after the robot touches it.</p><p>Point tracks find when the object moves; a VLM judges contact on close crops of the frames where gripper and object come closest. Motion with no plausible contact before it is a violation. A Gemini audit of 16 frames is fused in by percentile rank.</p><a href="#contact">Examples &rarr;</a></div>
+      <div class="law"><h3>Object persistence</h3><p class="rule">An object should never duplicate, appear from nowhere or vanish.</p><p>Tracks of the manipulated object score duplication, pop-in and vanishing; a Gemini audit of 16 frames covers every other object. The two are averaged by percentile rank.</p><a href="#persistence">Examples &rarr;</a></div>
+      <div class="law"><h3>Solidity</h3><p class="rule">An object should not pass through a solid surface or become embedded in it.</p><p>Masks and 3D point clouds of the moving and the static object find the frames at risk of pass-through or insertion; Gemini then judges those frames with the safe frames before them.</p><a href="#solidity">Examples &rarr;</a></div>
+      <div class="law"><h3>Robot deformation</h3><p class="rule">Joints articulate, but each robot link must stay rigid.</p><p>Each link's tracked 3D points are aligned to a reference frame by one rigid transform. The residual it cannot explain, divided by the link length, is the score, taken at the worst frame.</p><a href="#robot">Examples &rarr;</a></div>
+      <div class="law"><h3>Object deformation</h3><p class="rule">A rigid object should keep its shape and appearance while the robot handles it.</p><p>With the robot's pixels removed, the object in each frame is compared patch by patch with a clean reference view. The score averages this with Gemini's rating of the whole video.</p><a href="#object">Examples &rarr;</a></div>
+    </div>
+  </section>
+
+  <section id="results">
+    <p class="eyebrow">Results</p>
+    <h2>Results on RP-Bench</h2>
+    <p class="sub">Per-video AUROC against the human labels, and how far the reported frame lies from the annotated one.</p>
+    <div class="tablewrap">
+      <table class="res">
+        <thead>
+          <tr><th>Law</th><th>Videos / positives</th><th>RoboProbe AUROC</th><th>Gemini 4 Argon AUROC</th><th>Frame error, RoboProbe / middle frame</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Contact fidelity</td><td>884 / 311</td><td class="o">0.889</td><td class="g">0.800</td><td>4 / 20</td></tr>
+          <tr><td>Object persistence</td><td>880 / 177</td><td class="o">0.957</td><td class="g">0.919</td><td>5 / 31.5</td></tr>
+          <tr><td>Solidity</td><td>884 / 154</td><td class="o">0.894</td><td class="g">0.781</td><td>3 / 20</td></tr>
+          <tr><td>Robot deformation</td><td>767 / 480</td><td class="o">0.851</td><td class="g">0.795</td><td>0.5 / 23</td></tr>
+          <tr><td>Object deformation</td><td>802 / 247</td><td class="o">0.881</td><td class="g">0.843</td><td>7 / 13</td></tr>
+          <tr><td>Average</td><td></td><td class="o">0.894</td><td class="g">0.828</td><td>3.9 / 21.5</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="cap">From Table 1 of the paper. RoboProbe with the agent in the loop; Gemini 4 Argon sees 16 uniformly sampled frames and a violation-specific question. Frame error is the median |reported &minus; annotated frame| over the annotated positives with a reported frame, against always guessing the middle frame.</p>
+    <div style="margin-top:28px">
+      <figure class="fig">
+        <a href="assets/fig/fig3_cases.webp" target="_blank" rel="noopener"><img src="assets/fig/fig3_cases.webp" width="2400" height="1304" loading="lazy" alt="Figure 3. (a) Contact, HunyuanVideo 1.5: human mark at frame 20, RoboProbe frame 22, Gemini frame 40. (b) Solidity, ABot: human span 6 to 16, RoboProbe frame 10, Gemini frame 21. (c) Object deformation: the audit gives the apple its pixels back and the metric flags it with 0.59 at frame 70."></a>
+      </figure>
+      <p class="figcap"><span class="figlabel">Figure 3.</span> <b>RoboProbe localizes contact and solidity violations, and its audit rescues a missed case.</b> (a, b) Lanes show the human mark, the frame our metric reports and the frame Gemini 4 Argon names. Our frame comes from the geometry: in (b), robot points found inside the cup. The red box marks that frame. (c) The robot mask covers the apple, so no frame can be compared until the audit agent's edge-case inspection gives the apple its pixels back.</p>
+      <h3 class="fvtitle">Videos behind Figure 3</h3>
+      <p class="cap">The three videos of the figure. The buttons jump to the frames the figure shows.</p>
+      <div class="figvids three" id="fv3"></div>
+    </div>
+  </section>
+
+  <section id="detections">
+    <p class="eyebrow">Supplement</p>
+    <h2>Detections across the five laws</h2>
+    <p class="sub">From the supplementary material. The videos below show more examples per law.</p>
+    <figure class="fig">
+      <a href="assets/fig/supp_detections.webp" target="_blank" rel="noopener"><img src="assets/fig/supp_detections.webp" width="2400" height="681" loading="lazy" alt="Supplementary figure. Eight labelled violations grouped by law, each with an earlier frame above the violation frame, a red circle on the violation and the metric's score."></a>
+    </figure>
+    <p class="figcap"><b>The metrics detect violations of all five laws.</b> Eight labelled violations in the evaluation set, grouped by law. Each column shows an earlier frame above the violation frame, a red circle marks the violation and the pill gives the metric's score.</p>
+  </section>
+
+
+
+  <section id="examples">
+    <p class="eyebrow">Example videos</p>
+    <h2>Labelled violations, law by law</h2>
+    <p class="sub">Each clip is a generated video labelled a violation of the law shown. Under each clip, a timeline marks when the annotator saw the violation start, the frame RoboProbe reports and the frame the frames-only Gemini baseline names.</p>
+    <details class="howto">
+      <summary>How to read an example</summary>
+      <div class="legend">
+        <div><span class="sw band"></span><span><b>Annotated violation.</b> A dot is the onset an annotator marked; a band is an annotated interval.</span></div>
+        <div><span class="sw ours"></span><span><b>RoboProbe frame.</b> The frame the metric reports as the violation.</span></div>
+        <div><span class="sw gem"></span><span><b>Gemini frame.</b> The frame the frames-only baseline names, one of its 16 sampled frames.</span></div>
+        <div><span class="sw dot" style="background:var(--fg);width:3px;height:16px;border-radius:0;margin-left:5px;margin-right:4px"></span><span>Click the timeline or a marker to jump to that frame. The poster shows the violation.</span></div>
+        <div style="grid-column:1/-1"><span><b>Scores.</b> <b class="o">Flags</b> means the score is at or above the threshold that maximizes Youden's index on all labelled RP-Bench videos, set separately for RoboProbe and for Gemini, as in the paper's generator table. Scales: Contact fidelity and Object persistence give a 0&ndash;1 rank-fused score (Gemini: probability, 0&ndash;100 for Contact, 0&ndash;1 for Persistence); Solidity gives a 0&ndash;100 judge probability for both; Robot deformation gives the rigid-fit residual as a fraction of link length (Gemini: 0&ndash;100 rating); Object deformation gives 0&ndash;1 (Gemini: 0&ndash;100). For Contact fidelity and Object persistence the Gemini answer is also the audit that RoboProbe fuses with its own evidence.</span></div>
+      </div>
+    </details>
+    <div class="toolbar">
+      <div class="tabs" role="tablist" aria-label="Law" id="lawtabs"></div>
+      <div class="speed" role="group" aria-label="Playback speed">Speed <button type="button" data-rate="0.25">0.25&times;</button><button type="button" data-rate="0.5">0.5&times;</button><button type="button" data-rate="1" aria-pressed="true">1&times;</button></div>
+    </div>
+    <div id="panels"></div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><b>About the videos.</b> Every clip except the real recording is generated by a video model; the real recording comes from one of the robot datasets of RP-Bench. Clips play muted on a loop while on screen; pausing a clip or jumping to a frame keeps it still.</p>
+    <p>How the examples were chosen: each clip is labelled a violation of the law shown (labels the annotators marked as unsure are left out), RoboProbe flags it well above its threshold, the reported frame lies close to the annotated violation where an annotation of the timing exists (in one Robot deformation clip the changed hand stays until the end, and the reported frame comes later), and the violation is visible to the eye. Two examples are ones the frames-only Gemini baseline misses. The scores are the ones behind Table 1. Clips are re-encoded at 480p or lower, without sound; six clips are cropped to leave out people in the background.</p>
+    <p>All content is self-contained; this page makes no network requests.</p>
+  </div>
+</footer>
+
+<script>
+const LAWS = [
+  {id: "contact", name: "Contact fidelity", rule: "An object should start to move only after the robot touches it.", auroc: "0.889", gem: "0.800"},
+  {id: "persistence", name: "Object persistence", rule: "An object should never duplicate, appear from nowhere or vanish.", auroc: "0.957", gem: "0.919"},
+  {id: "solidity", name: "Solidity", rule: "An object should not pass through a solid surface or become embedded in it.", auroc: "0.894", gem: "0.781"},
+  {id: "robot", name: "Robot deformation", rule: "Joints articulate, but each robot link must stay rigid.", auroc: "0.851", gem: "0.795"},
+  {id: "object", name: "Object deformation", rule: "A rigid object should keep its shape and appearance while the robot handles it.", auroc: "0.881", gem: "0.843"}
+];
+// n: frames, fps, human: onset frame or [[a,b],...] intervals, ours / gem: reported frames (null = none)
+const EX = [
+  {key: "contact_wan", law: "contact", gen: "Wan2.2 5B", scene: "Humanoid hands, tennis ball into a bin", n: 121, fps: 24,
+   desc: "The ball flies into the bin by itself while the hand is still far away.",
+   ours: "0.985", gem: "75", oflag: true, gflag: true, human: 16, of: 16, gf: 16},
+  {key: "contact_hy", law: "contact", gen: "HunyuanVideo 1.5", scene: "Single arm, part into a container", n: 121, fps: 24,
+   desc: "The blue part leaps from the table into the gripper, which never reached it.",
+   ours: "0.888", gem: "70", oflag: true, gflag: true, human: 54, of: 54, gf: 56},
+  {key: "contact_banana", law: "contact", gen: "Wan2.2 5B", scene: "Humanoid hands, banana onto a plate", n: 121, fps: 24,
+   desc: "The banana rises beside the open hand and floats onto the plate, where it ends up standing on its end.",
+   ours: "0.983", gem: "75", oflag: true, gflag: true, human: 41, of: 41, gf: 16},
+  {key: "persist_wan", law: "persistence", gen: "Wan2.2 5B", scene: "Humanoid, Rubik's cube", n: 121, fps: 24,
+   desc: "A second Rubik's cube appears in the hand while the first one stays on the shelf.",
+   ours: "0.990", gem: "0.75", oflag: true, gflag: true, human: 3, of: 3, gf: 8},
+  {key: "persist_hy", law: "persistence", gen: "HunyuanVideo 1.5", scene: "Dual arm, block stacking", n: 121, fps: 24,
+   desc: "A blue cube appears in the hand out of nowhere in the first frames.",
+   ours: "0.951", gem: "0.75", oflag: true, gflag: true, human: 2, of: 0, gf: 8},
+  {key: "persist_abot", law: "persistence", gen: "ABot-PhysWorld", scene: "Single arm, brake shoe into a box", n: 81, fps: 15,
+   desc: "The gripper carries a third brake shoe while both shoes are still on the table.",
+   ours: "0.864", gem: "0.70", oflag: true, gflag: true, human: 42, of: 42, gf: 75},
+  {key: "solid_hy", law: "solidity", gen: "HunyuanVideo 1.5", scene: "Single arm, brake shoe into a box", n: 121, fps: 24,
+   desc: "The gripper lowers the brake shoe straight through the rim of the box, which cuts across the gripper.",
+   ours: "100", gem: "25", oflag: true, gflag: false, human: 98, of: 98, gf: null},
+  {key: "solid_cos3", law: "solidity", gen: "Cosmos3 Nano", scene: "Humanoid, clip into a bin", n: 93, fps: 24,
+   desc: "The clip and fingers pass through the wall of the bin instead of over its rim.",
+   ours: "100", gem: "25", oflag: true, gflag: false, human: 73, of: 73, gf: null},
+  {key: "solid_abot", law: "solidity", gen: "ABot-PhysWorld", scene: "Single arm, pressing buttons", n: 81, fps: 15,
+   desc: "The gripper sinks into the red button instead of pressing on its surface.",
+   ours: "95", gem: "70", oflag: true, gflag: true, human: 63, of: 66, gf: null},
+  {key: "robot_split", law: "robot", gen: "Wan2.2 5B", scene: "Single arm, brake shoe into a box", n: 121, fps: 24, link: "forearm",
+   desc: "As the black arm swings up, its gripper and forearm warp into a large, shapeless mass.",
+   ours: "1.857", gem: "75", oflag: true, gflag: true, human: [[93, 101]], of: 102, gf: 96},
+  {key: "robot_claw", law: "robot", gen: "Cosmos 2.5", scene: "Humanoid hand, tennis ball into a bin", n: 93, fps: 16, link: "left palm",
+   desc: "The five-finger hand turns into a black two-jaw gripper on a thick white arm while it carries the ball. RoboProbe reports a later frame, while the gripper is still there.",
+   ours: "0.310", gem: "65", oflag: true, gflag: true, human: [[56, 64]], of: 88, gf: 92},
+  {key: "robot_fingers", law: "robot", gen: "ABot-PhysWorld", scene: "Humanoid, Rubik's cube into a box", n: 81, fps: 15, link: "right index finger",
+   desc: "After the right hand lets go of the cube, its fingers stretch into long, thin blades.",
+   ours: "1.881", gem: "60", oflag: true, gflag: true, human: [[67, 75]], of: 77, gf: 59},
+  {key: "object_cos25", law: "object", gen: "Cosmos 2.5", scene: "Humanoid, vegetable pick-and-place", n: 93, fps: 16,
+   desc: "The round vegetable taken from the cup turns into a zucchini in the hand.",
+   ours: "0.800", gem: "65", oflag: true, gflag: true, human: [[26, 34]], of: 23, gf: 49},
+  {key: "object_wan", law: "object", gen: "Wan2.2 5B", scene: "Humanoid, cube onto a plate", n: 121, fps: 24,
+   desc: "The small cube grows and splits into a large red cube and a green one.",
+   ours: "0.746", gem: "70", oflag: true, gflag: true, human: [[26, 34]], of: 29, gf: 40},
+  {key: "object_hy", law: "object", gen: "HunyuanVideo 1.5", scene: "Dual arm, block stacking", n: 121, fps: 24,
+   desc: "The grey case turns green and grows a purple layer while the hands hold it.",
+   ours: "0.744", gem: "65", oflag: true, gflag: true, human: [[51, 59]], of: 54, gf: 64},
+  {key: "object_cos3", law: "object", gen: "Cosmos3 Nano", scene: "Humanoid, Rubik's cube", n: 93, fps: 24,
+   desc: "The Rubik's cube smears and loses its shape in the hand.",
+   ours: "0.665", gem: "65", oflag: true, gflag: true, human: [[54, 62]], of: 57, gf: 55}
+];
+const REAL = {key: "real_tennis", gen: "Real recording", scene: "Humanoid hands, tennis ball into a bin", n: 210, fps: 15,
+  desc: "The hand grasps the ball, carries it over and drops it into the bin.",
+  rows: [["Contact fidelity", "0.168", "25"], ["Object persistence", "0.257", "0.25"], ["Solidity", "25", "25"]]};
+
+function el(tag, attrs, html) {
+  const e = document.createElement(tag);
+  if (attrs) for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (html !== undefined) e.innerHTML = html;
+  return e;
+}
+function pct(f, n) { return ((f + 0.5) / n * 100).toFixed(3) + "%"; }
+
+// clips play muted on a loop while on screen; a clip the viewer paused or jumped in stays put
+const ALLV = [];
+let RATE = 1;
+const REDUCE = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const IO = (REDUCE || !("IntersectionObserver" in window)) ? null : new IntersectionObserver((ents) => {
+  for (const e of ents) {
+    const v = e.target;
+    if (e.isIntersecting && e.intersectionRatio >= 0.5) {
+      if (v.paused && !v.dataset.hold) { v._auto = true; v.preload = "auto"; const p = v.play(); if (p) p.catch(() => { v._auto = false; }); }
+    } else if (!v.paused) { v._autopause = true; v.pause(); }
+  }
+}, {threshold: [0, 0.5]});
+
+function makeVideo(x) {
+  const box = el("div", {class: "vbox"});
+  const v = el("video", {src: "assets/video/" + x.key + ".mp4", poster: "assets/poster/" + x.key + ".jpg",
+    controls: "", muted: "", loop: "", playsinline: "", preload: "none",
+    "aria-label": (x.scene || "") + ". " + x.desc});
+  v.muted = true;
+  v.addEventListener("play", () => { v.playbackRate = RATE; if (v._auto) v._auto = false; else delete v.dataset.hold; });
+  v.addEventListener("pause", () => { if (v._autopause || document.hidden) v._autopause = false; else v.dataset.hold = "1"; });
+  ALLV.push(v);
+  if (IO) IO.observe(v);
+  box.appendChild(v);
+  const fn = el("div", {class: "frameno", "aria-hidden": "true"}, "frame &ndash; / " + x.n);
+  box.appendChild(fn);
+  return {box, v, fn};
+}
+
+function wireTimeline(x, v, fn, tl, head) {
+  const frameOf = () => Math.min(x.n - 1, Math.max(0, Math.floor(v.currentTime * x.fps + 1e-6)));
+  let raf = null;
+  const draw = () => {
+    const f = frameOf();
+    head.style.left = pct(f, x.n);
+    fn.textContent = "frame " + f + " / " + x.n;
+  };
+  const loop = () => { draw(); raf = v.paused ? null : requestAnimationFrame(loop); };
+  v.addEventListener("play", () => { if (!raf) raf = requestAnimationFrame(loop); });
+  v.addEventListener("seeked", draw);
+  v.addEventListener("timeupdate", draw);
+  const seek = (f) => {
+    v.dataset.hold = "1";
+    v.pause();
+    const go = () => { v.currentTime = (f + 0.5) / x.fps; };
+    if (v.readyState < 1) { v.preload = "auto"; v.addEventListener("loadedmetadata", go, {once: true}); v.load(); }
+    else go();
+    head.style.left = pct(f, x.n);
+    fn.textContent = "frame " + f + " / " + x.n;
+  };
+  if (tl) tl.addEventListener("click", (e) => {
+    const r = tl.getBoundingClientRect();
+    seek(Math.min(x.n - 1, Math.max(0, Math.floor((e.clientX - r.left) / r.width * x.n))));
+  });
+  return seek;
+}
+
+function card(x, lawName) {
+  const c = el("article", {class: "card", id: "ex-" + x.key});
+  const {box, v, fn} = makeVideo(x);
+  if (x.oflag && !x.gflag) box.appendChild(el("div", {class: "ribbon", title: "The frames-only Gemini baseline misses this violation; RoboProbe flags it."}, "Gemini misses"));
+  c.appendChild(box);
+  // timeline
+  const tl = el("div", {class: "tl", role: "slider", "aria-label": "Timeline of " + x.n + " frames; click to jump", "aria-valuemin": "0", "aria-valuemax": String(x.n - 1), tabindex: "0"});
+  tl.appendChild(el("div", {class: "track"}));
+  let humanTxt;
+  if (Array.isArray(x.human)) {
+    for (const [a, b] of x.human) {
+      const band = el("div", {class: "band", title: "Annotated interval, frames " + a + "–" + b});
+      band.style.left = (a / x.n * 100) + "%"; band.style.width = ((b - a + 1) / x.n * 100) + "%";
+      tl.appendChild(band);
+    }
+    humanTxt = x.human.map(([a, b]) => a + "–" + b).join(", ");
+  } else {
+    const d = el("div", {class: "onset", title: "Annotated onset, frame " + x.human});
+    d.style.left = pct(x.human, x.n); tl.appendChild(d);
+    humanTxt = String(x.human);
+  }
+  if (x.of !== null) { const m = el("div", {class: "m-ours", title: "RoboProbe frame " + x.of}); m.style.left = pct(x.of, x.n); tl.appendChild(m); }
+  if (x.gf !== null) { const m = el("div", {class: "m-gem", title: "Gemini frame " + x.gf}); m.style.left = pct(x.gf, x.n); tl.appendChild(m); }
+  const head = el("div", {class: "head"}); head.style.left = "0%"; tl.appendChild(head);
+  c.appendChild(tl);
+  const seek = wireTimeline(x, v, fn, tl, head);
+  tl.addEventListener("keydown", (e) => {
+    const cur = Math.floor(v.currentTime * x.fps);
+    if (e.key === "ArrowRight") { seek(Math.min(x.n - 1, cur + 1)); e.preventDefault(); }
+    if (e.key === "ArrowLeft") { seek(Math.max(0, cur - 1)); e.preventDefault(); }
+  });
+  const marks = el("div", {class: "marks"});
+  const hb = el("button", {type: "button"}, '<span class="sw ' + (Array.isArray(x.human) ? 'band' : 'dot') + '"></span>Annotated ' + humanTxt);
+  hb.addEventListener("click", () => seek(Array.isArray(x.human) ? x.human[0][0] : x.human));
+  marks.appendChild(hb);
+  if (x.of !== null) { const b = el("button", {type: "button"}, '<span class="sw ours"></span>RoboProbe ' + x.of); b.addEventListener("click", () => seek(x.of)); marks.appendChild(b); }
+  if (x.gf !== null) { const b = el("button", {type: "button"}, '<span class="sw gem"></span>Gemini ' + x.gf); b.addEventListener("click", () => seek(x.gf)); marks.appendChild(b); }
+  else marks.appendChild(el("span", {class: "na"}, "Gemini names no frame"));
+  c.appendChild(marks);
+  // body
+  const body = el("div", {class: "body"});
+  body.appendChild(el("div", {class: "meta"}, "<span><b>" + x.gen + "</b></span><span>" + x.scene + "</span>" + (x.link ? "<span>link: " + x.link + "</span>" : "") + "<span>" + x.n + " frames, " + x.fps + " fps</span>"));
+  body.appendChild(el("p", {class: "desc"}, x.desc));
+  const sc = el("div", {class: "scores"});
+  sc.appendChild(el("div", {class: "sc ours"}, '<div class="who">RoboProbe</div><div class="val">' + x.ours +
+    (x.oflag ? ' <span class="flag y ours">flags</span>' : ' <span class="flag n">misses</span>') + '</div>'));
+  sc.appendChild(el("div", {class: "sc gem"}, '<div class="who">Gemini, 16 frames</div><div class="val">' + x.gem +
+    (x.gflag ? ' <span class="flag y gem">flags</span>' : ' <span class="flag n">misses</span>') + '</div>'));
+  body.appendChild(sc);
+  c.appendChild(body);
+  return c;
+}
+
+// example browser: one tab per law, plus the real video
+const panels = document.getElementById("panels"), tabsEl = document.getElementById("lawtabs");
+const TABS = [];
+function addPanel(id, label, n, rule, num) {
+  const p = el("div", {class: "panel", id: id, role: "tabpanel", "aria-label": label});
+  const h = el("div", {class: "panelhead"});
+  h.appendChild(el("p", {class: "rule"}, rule));
+  if (num) h.appendChild(el("span", {class: "num"}, num));
+  p.appendChild(h);
+  const g = el("div", {class: "grid"}); p.appendChild(g);
+  panels.appendChild(p);
+  const b = el("button", {type: "button", role: "tab", "aria-controls": id, "aria-selected": "false", tabindex: "-1"}, label + '<span class="n">' + n + '</span>');
+  b.addEventListener("click", () => { activate(id); try { history.replaceState(null, "", "#" + id); } catch (e) {} });
+  tabsEl.appendChild(b);
+  TABS.push({id, p, b});
+  return g;
+}
+function activate(id, focus) {
+  for (const t of TABS) {
+    const on = t.id === id;
+    t.p.hidden = !on; t.b.setAttribute("aria-selected", on ? "true" : "false"); t.b.tabIndex = on ? 0 : -1;
+    if (on && focus) t.b.focus();
+  }
+}
+tabsEl.addEventListener("keydown", (e) => {
+  const i = TABS.findIndex(t => t.b.getAttribute("aria-selected") === "true");
+  if (e.key === "ArrowRight") { activate(TABS[(i + 1) % TABS.length].id, true); e.preventDefault(); }
+  if (e.key === "ArrowLeft") { activate(TABS[(i - 1 + TABS.length) % TABS.length].id, true); e.preventDefault(); }
+});
+for (const L of LAWS) {
+  const xs = EX.filter(e => e.law === L.id);
+  const g = addPanel(L.id, L.name, xs.length, L.rule, "AUROC " + L.auroc + " vs. Gemini " + L.gem);
+  for (const x of xs) g.appendChild(card(x, L.name));
+}
+const realGrid = addPanel("real", "Real video", 1, "The real recording of the task in the first Contact fidelity example. Neither RoboProbe nor Gemini flags it for Contact fidelity, Object persistence or Solidity.");
+activate(LAWS[0].id);
+function fromHash() {
+  const id = location.hash.slice(1);
+  if (TABS.some(t => t.id === id)) { activate(id); document.getElementById("examples").scrollIntoView(); }
+}
+window.addEventListener("hashchange", fromHash);
+fromHash();
+// playback speed for every clip on the page
+for (const b of document.querySelectorAll(".speed button")) b.addEventListener("click", () => {
+  RATE = parseFloat(b.dataset.rate);
+  for (const o of document.querySelectorAll(".speed button")) o.setAttribute("aria-pressed", o === b ? "true" : "false");
+  for (const v of ALLV) v.playbackRate = RATE;
+});
+// real video card
+(function () {
+  const x = REAL, c = el("article", {class: "card", id: "ex-" + x.key});
+  const {box, v, fn} = makeVideo(x);
+  c.appendChild(box);
+  const tl = el("div", {class: "tl", "aria-hidden": "true"});
+  tl.appendChild(el("div", {class: "track"}));
+  const head = el("div", {class: "head"}); tl.appendChild(head); c.appendChild(tl);
+  wireTimeline(x, v, fn, tl, head);
+  const body = el("div", {class: "body"});
+  body.appendChild(el("div", {class: "meta"}, "<span><b>" + x.gen + "</b></span><span>" + x.scene + "</span><span>" + x.n + " frames, " + x.fps + " fps</span>"));
+  body.appendChild(el("p", {class: "desc"}, x.desc));
+  let t = '<table class="realscores"><thead><tr><th>Law</th><th>RoboProbe</th><th>Gemini</th></tr></thead><tbody>';
+  for (const [a, o, g] of x.rows) t += '<tr><td>' + a + '</td><td class="o">' + o + '</td><td class="g">' + g + '</td></tr>';
+  t += '</tbody></table><p class="meta" style="margin:8px 0 0">All six scores are below their flag thresholds.</p>';
+  body.appendChild(el("div", null, t));
+  c.appendChild(body);
+  realGrid.appendChild(c);
+})();
+// videos behind Figures 1 and 3: labels, scores and frames as printed in the figures
+const FIG1 = [
+  {key: "fig1_contact", law: "Contact fidelity", desc: "Drawer opens untouched.", score: "0.88", n: 93, fps: 16},
+  {key: "fig1_persist", law: "Object persistence", desc: "Second blue block appears.", score: "0.90", n: 93, fps: 16},
+  {key: "fig1_solid", law: "Solidity", desc: "Banana inside drawer front.", score: "0.95", n: 189, fps: 24},
+  {key: "fig1_robot", law: "Robot deformation", desc: "Hand changes shape.", score: "0.93", n: 93, fps: 16},
+  {key: "fig1_object", law: "Object deformation", desc: "Held cube warps.", score: "0.88", n: 93, fps: 16}
+];
+const FIG3 = [
+  {key: "fig3a", law: "(a) Contact", gen: "HunyuanVideo 1.5", desc: "The banana lifts before the grip.", frames: [6, 15, 22, 30, 40], n: 121, fps: 24},
+  {key: "fig3b", law: "(b) Solidity", gen: "ABot-PhysWorld", desc: "The hand passes into the cup; RoboProbe finds 52 robot points inside the cup at frame 10.", frames: [2, 10, 16, 21, 32], n: 81, fps: 15},
+  {key: "fig3c", law: "(c) Object deformation", gen: "HunyuanVideo 1.5", desc: "The robot mask covers the apple until the audit gives the apple its pixels back; the metric then flags it with 0.59 at frame 70.", frames: [16, 24, 70], n: 121, fps: 24}
+];
+function figTile(x) {
+  const c = el("article", {class: "fv", id: "ex-" + x.key});
+  const {box, v, fn} = makeVideo(Object.assign({scene: x.law}, x));
+  c.appendChild(box);
+  const seek = wireTimeline(x, v, fn, null, el("div"));
+  const body = el("div", {class: "body"});
+  body.appendChild(el("h3", null, x.law));
+  if (x.gen) body.appendChild(el("div", {class: "meta"}, "<span><b>" + x.gen + "</b></span><span>" + x.n + " frames, " + x.fps + " fps</span>"));
+  body.appendChild(el("p", {class: "desc"}, x.desc));
+  if (x.frames) {
+    const m = el("div", {class: "marks"});
+    for (const f of x.frames) { const b = el("button", {type: "button"}, "frame " + f); b.addEventListener("click", () => seek(f)); m.appendChild(b); }
+    body.appendChild(m);
+  }
+  if (x.score) body.appendChild(el("span", {class: "fvscore"}, "Score " + x.score));
+  c.appendChild(body);
+  return c;
+}
+for (const x of FIG1) document.getElementById("fv1").appendChild(figTile(x));
+for (const x of FIG3) document.getElementById("fv3").appendChild(figTile(x));
+// theme toggle (per-viewer convenience only)
+(function () {
+  const btn = document.getElementById("themebtn"), root = document.documentElement;
+  let saved = null;
+  try { saved = localStorage.getItem("rp-theme"); } catch (e) {}
+  if (saved === "light" || saved === "dark") root.setAttribute("data-theme", saved);
+  btn.addEventListener("click", () => {
+    const dark = root.getAttribute("data-theme") ? root.getAttribute("data-theme") === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    const next = dark ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("rp-theme", next); } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>
